@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" xintegrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .hackathon-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00aeffff 0%, #0d02e3ff 100%);
             transition: all 0.3s ease;
         }
 
@@ -57,9 +57,7 @@
                             </a>
                         </div>
                         <div class="w-full md:w-1/2">
-                            <div class="bg-white bg-opacity-20 rounded-lg p-4 h-48 flex items-center justify-center">
-                                <i class="fas fa-laptop-code text-5xl text-white opacity-70"></i>
-                            </div>
+                            <img src="/image/hackathon.png" alt="Imagem do Hackathon" class="w-full h-auto object-cover rounded-lg">
                         </div>
                     </div>
                 </div>
@@ -72,8 +70,8 @@
                                 <i class="fas fa-book"></i>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-900">Novo curso disponível</p>
-                                <p class="text-sm text-gray-500">Introdução ao Laravel 10</p>
+                                <p class="text-sm font-medium text-gray-900">HealthTech Disponivel</p>
+                                <p class="text-sm text-gray-500">Novo Hackathon disponivel para inscrição</p>
                             </div>
                             <span class="ml-auto text-xs text-gray-500">2 dias atrás</span>
                         </div>
@@ -83,7 +81,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-900">Hackathon concluído</p>
-                                <p class="text-sm text-gray-500">Você terminou em 3º lugar</p>
+                                <p class="text-sm text-gray-500">Você terminou em 1º lugar</p>
                             </div>
                             <span class="ml-auto text-xs text-gray-500">1 semana atrás</span>
                         </div>
@@ -133,19 +131,13 @@
                         <li>
                             <a href="#" class="flex items-center text-indigo-600 hover:text-indigo-800">
                                 <i class="fas fa-book-open mr-3"></i>
-                                Meus Cursos
+                                Meus hackathons
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center text-indigo-600 hover:text-indigo-800">
                                 <i class="fas fa-calendar-alt mr-3"></i>
-                                Calendário
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center text-indigo-600 hover:text-indigo-800">
-                                <i class="fas fa-certificate mr-3"></i>
-                                Certificados
+                                Confirmar presença
                             </a>
                         </li>
                     </ul>
