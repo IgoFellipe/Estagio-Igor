@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard do Aluno</title>
-    {{-- Você pode adicionar um link para seu CSS aqui se desejar --}}
     <style>
         body {
             font-family: sans-serif;

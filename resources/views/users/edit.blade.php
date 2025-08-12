@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Usuário</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
+
 <body>
     <div id="app">
         <h1>Editar Usuário</h1>
@@ -41,13 +43,20 @@
     </div>
 
     <script>
-        const { createApp, ref } = Vue;
+        const {
+            createApp,
+            ref
+        } = Vue;
         createApp({
             setup() {
-                const tipo = ref('{{ old('tipo', $user->tipo) }}');
-                return { tipo };
+                const tipo = ref('{{ old(',
+                    tipo, ', $user->tipo) }}');
+                return {
+                    tipo
+                };
             }
         }).mount('#app');
     </script>
 </body>
+
 </html>
