@@ -21,35 +21,54 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Validação inicial para todos os tipos de usuário
         $request->validate([
-            'email' => 'required|email',
             'password' => 'required|string',
-            'tipo' => 'required|in:aluno,professor',
+            'tipo' => 'required|in:aluno,professor,adm',
         ]);
 
-        $user = User::where('email', $request->email)
-            ->where('tipo', $request->tipo)
-            ->first();
+        $credentials = [];
+        if ($request->tipo === 'aluno' || $request->tipo === 'professor') {
+            $request->validate(['email' => 'required|email']);
+            $credentials = [
+                'email' => $request->email,
+                'password' => $request->password,
+                'tipo' => $request->tipo,
+            ];
+        } elseif ($request->tipo === 'adm') {
+            $request->validate(['name' => 'required|string']);
+            $credentials = [
+                'name' => $request->name,
+                'password' => $request->password,
+                'tipo' => $request->tipo,
+            ];
+        }
 
-        // valida matrícula se tipo for aluno
-        if ($user && $request->tipo === 'aluno') {
-            if ($user->matricula !== $request->matricula) {
+        // Validação de matrícula para alunos
+        if ($request->tipo === 'aluno') {
+            $user = User::where('email', $request->email)
+                ->where('tipo', $request->tipo)
+                ->first();
+
+            if ($user && $user->matricula !== $request->matricula) {
                 return back()->withErrors(['matricula' => 'Matrícula incorreta para o usuário informado.']);
             }
         }
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
+        // Tentativa de login
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-            $redirectRoute = $user->tipo === 'aluno'
-                ? 'dashboard.aluno'
-                : 'dashboard.professor';
+            $user = Auth::user();
 
-            return redirect()->route($redirectRoute)
-                ->with('success', 'Login realizado com sucesso.');
+            if ($user->tipo === 'aluno' || $user->tipo === 'professor') {
+                return redirect()->route('dashboard.aluno')->with('success', 'Login realizado com sucesso.');
+            } elseif ($user->tipo === 'adm') {
+                return redirect()->route('users.index')->with('success', 'Login de ADM realizado com sucesso.');
+            }
         }
 
-        return back()->withErrors(['email' => 'Credenciais inválidas.']);
+        return back()->withErrors(['geral' => 'Credenciais inválidas.']);
     }
 
     public function register(Request $request)
@@ -65,7 +84,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'matricula' => $request->matricula,
-            'tipo' => 'aluno', // aqui pode ajustar depois se quiser deixar dinâmico
+            'tipo' => 'aluno',
             'password' => Hash::make($request->password),
         ]);
 

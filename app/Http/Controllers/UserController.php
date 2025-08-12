@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $tipo = $request->input('tipo');
+        $tipo = $request->input('filtro');
         $query = User::query();
 
-        if ($tipo && in_array($tipo, ['aluno', 'professor'])) {
+        if ($tipo && in_array($tipo, ['aluno', 'professor', 'adm'])) {
             $query->where('tipo', $tipo);
         }
 
@@ -31,15 +32,17 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'matricula' => $request->tipo === 'aluno' ? 'required|string|unique:users' : 'nullable',
-            'tipo' => 'required|in:aluno,professor',
+            'tipo' => 'required|in:aluno,professor,adm',
+            'matricula' => 'nullable|string|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
+
+        $matricula = ($request->tipo === 'aluno') ? $request->matricula : null;
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'matricula' => $request->tipo === 'aluno' ? $request->matricula : null,
+            'matricula' => $matricula,
             'tipo' => $request->tipo,
             'password' => Hash::make($request->password),
         ]);
@@ -57,17 +60,20 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'tipo' => 'required|in:aluno,professor',
-            'matricula' => $request->tipo === 'aluno' ? 'required|string|unique:users,matricula,' . $user->id : 'nullable',
-            'password' => 'required|string|min:6|confirmed',
+            'tipo' => 'required|in:aluno,professor,adm',
+            'matricula' => 'nullable|string|unique:users,matricula,' . $user->id,
+            'password' => 'nullable|string|min:6|confirmed',
         ]);
+
+        $matricula = ($request->tipo === 'aluno') ? $request->matricula : null;
+        $password = $request->password ? Hash::make($request->password) : $user->password;
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'matricula' => $request->tipo === 'aluno' ? $request->matricula : null,
+            'matricula' => $matricula,
             'tipo' => $request->tipo,
-            'password' => Hash::make($request->password),
+            'password' => $password,
         ]);
 
         return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso!');

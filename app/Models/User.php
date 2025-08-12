@@ -30,8 +30,9 @@ class User extends Authenticatable
         'tipo' => 'string',
     ];
 
+    // Adicione a nova enumeração para o tipo
     protected $enums = [
-        'tipo' => ['aluno', 'professor'],
+        'tipo' => ['aluno', 'professor', 'adm'],
     ];
 
     public function grupos()

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('tipo', ['aluno', 'professor']);
+            $table->enum('tipo', ['aluno', 'professor', 'adm'])->default('aluno');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('users');
