@@ -76,7 +76,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'matricula' => 'required|string|unique:users',
+            'matricula' => 'required|int|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -89,7 +89,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-        return redirect('/login')->with('success', 'Cadastro realizado e login efetuado com sucesso.');
+        return redirect('/dashboard/aluno')->with('success', 'Cadastro realizado com sucesso.');
     }
 
 
