@@ -9,98 +9,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Incluindo Font Awesome via CDN para os ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-    <style>
-        /* Definindo as cores principais da UniFil para fácil manutenção */
-        :root {
-            --cor-principal: #f58220;
-            /* Laranja UniFil */
-            --cor-sidebar: #343a40;
-            /* Cinza escuro para a sidebar */
-            --cor-fundo: #f4f6f9;
-            /* Cinza claro do fundo */
-            --cor-texto-escuro: #333333;
-            --cor-texto-claro: #666666;
-            /* 1. Sua nova variável de cor foi adicionada aqui */
-            --cor-hackathon: #0037ffff;
-        }
-
-        /* Classes utilitárias com as novas cores */
-        .bg-principal {
-            background-color: var(--cor-principal);
-        }
-
-        .text-principal {
-            color: var(--cor-principal);
-        }
-
-        .bg-sidebar {
-            background-color: var(--cor-sidebar);
-        }
-
-        .hover\:bg-principal-dark:hover {
-            background-color: #e07014;
-        }
-
-        /* 2. A classe do card agora usa a sua nova cor */
-        .hackathon-card {
-            background-color: var(--cor-hackathon);
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: #c2c7d0;
-            /* Cinza claro para texto do link */
-            transition: all 0.2s ease-in-out;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-link:hover,
-        .sidebar-link.active {
-            background-color: #494e53;
-            /* Cinza um pouco mais claro para hover/active */
-            color: #ffffff;
-        }
-
-        .sidebar-link i {
-            width: 20px;
-            margin-right: 1rem;
-            text-align: center;
-        }
-
-        /* Animação de pulso para o botão de destaque */
-        @keyframes pulse-animation {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(245, 130, 32, 0.7);
-            }
-
-            70% {
-                transform: scale(1.02);
-                box-shadow: 0 0 0 10px rgba(245, 130, 32, 0);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(245, 130, 32, 0);
-            }
-        }
-
-        .btn-destaque {
-            animation: pulse-animation 2s infinite;
-        }
-    </style>
+    <!-- ** AQUI ESTÁ A MUDANÇA: Link para o seu arquivo CSS externo ** -->
+    <link rel="stylesheet" href="{{ asset('css/dashboard_aluno.css') }}">
 </head>
 
 <body class="font-sans" style="background-color: var(--cor-fundo);">
     <div class="flex h-screen bg-gray-100">
-
+        <!-- =============================================== -->
+        <!-- Barra Lateral (Sidebar) -->
+        <!-- =============================================== -->
         <aside class="bg-sidebar text-white w-64 space-y-2 py-4 absolute inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30">
             <!-- Logo/Nome do Projeto -->
-            <a href="C:\laragon\www\SimplifiKathon\public\image\Simplifi(K)athon.png" class="text-white flex items-center justify-center px-6 py-4">
-                <h2 class="text-2xl font-bold">Simplifi(K)athon</h2>
+            <a href="#" class="text-white flex items-center justify-center px-6 py-4">
+                <h2 class="text-2xl font-bold">SimplifiKathon</h2>
             </a>
 
             <!-- Perfil do Usuário na Sidebar -->
@@ -144,6 +65,9 @@
             </nav>
         </aside>
 
+        <!-- =============================================== -->
+        <!-- Conteúdo Principal -->
+        <!-- =============================================== -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Header do Conteúdo -->
             <header class="bg-principal shadow-md">
@@ -175,12 +99,14 @@
                             </a>
                         </div>
                         <div class="md:w-2/5">
-                            <img src="/image/hackathon.png" alt="Imagem do Hackathon" class="w-full h-auto object-cover rounded-lg">
+                            <img src="{{ asset('image/hackathon.png') }}" alt="Imagem do Hackathon" class="w-full h-auto object-cover rounded-lg">
                         </div>
                     </div>
                 </div>
 
+                <!-- Nova linha de grid para os cards inferiores -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Card de Atividades Recentes (ocupa 2 colunas) -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">Atividades Recentes</h3>
                         <div class="space-y-4">
@@ -203,6 +129,7 @@
                         </div>
                     </div>
 
+                    <!-- Card de Links Rápidos (ocupa 1 coluna) -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">Links Rápidos</h3>
                         <ul class="space-y-3">
