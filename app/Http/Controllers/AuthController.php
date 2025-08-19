@@ -21,7 +21,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validação inicial para todos os tipos de usuário
         $request->validate([
             'password' => 'required|string',
             'tipo' => 'required|in:aluno,professor,adm',
@@ -44,7 +43,6 @@ class AuthController extends Controller
             ];
         }
 
-        // Validação de matrícula para alunos
         if ($request->tipo === 'aluno') {
             $user = User::where('email', $request->email)
                 ->where('tipo', $request->tipo)
@@ -55,7 +53,6 @@ class AuthController extends Controller
             }
         }
 
-        // Tentativa de login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 

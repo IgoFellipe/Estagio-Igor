@@ -5,26 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard do Aluno</title>
-    <!-- Incluindo Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Incluindo Font Awesome via CDN para os ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-    <!-- ** AQUI ESTÁ A MUDANÇA: Link para o seu arquivo CSS externo ** -->
     <link rel="stylesheet" href="{{ asset('css/dashboard_aluno.css') }}">
 </head>
 
 <body class="font-sans" style="background-color: var(--cor-fundo);">
     <div class="flex h-screen bg-gray-100">
-        <!-- =============================================== -->
-        <!-- Barra Lateral (Sidebar) -->
-        <!-- =============================================== -->
+
         <aside class="bg-sidebar text-white w-64 space-y-2 py-4 absolute inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30">
-            <!-- Logo/Nome do Projeto -->
             <a href="#" class="text-white flex items-center justify-center px-6 py-4">
-                <h2 class="text-2xl font-bold">SimplifiKathon</h2>
+                <img src="{{ asset('image/Simplifi(K)athon.png') }}" alt="Logo SimplifiKathon" class="h-12">
             </a>
 
-            <!-- Perfil do Usuário na Sidebar -->
             <div class="px-6 py-4 border-t border-b border-gray-700">
                 <div class="flex items-center">
                     <div class="h-12 w-12 rounded-full bg-principal flex items-center justify-center text-white font-bold text-xl">
@@ -37,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- Links de Navegação -->
             <nav class="px-2">
                 <a href="#" class="sidebar-link active">
                     <i class="fas fa-home"></i>
@@ -65,34 +57,25 @@
             </nav>
         </aside>
 
-        <!-- =============================================== -->
-        <!-- Conteúdo Principal -->
-        <!-- =============================================== -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header do Conteúdo -->
             <header class="bg-principal shadow-md">
                 <div class="max-w-full mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <!-- Botão de Menu para Mobile (funcionalidade pode ser adicionada com JS) -->
                     <button class="text-white lg:hidden">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
                     <h1 class="text-2xl font-bold text-white">Dashboard</h1>
-                    <!-- Avatar no canto direito (mantido) -->
                     <div class="h-8 w-8 rounded-full bg-white flex items-center justify-center text-principal font-bold lg:hidden">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
                 </div>
             </header>
 
-            <!-- Área de Conteúdo Rolável -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
-                <!-- Card de Hackathon (agora ocupa a largura total) -->
                 <div class="hackathon-card rounded-xl p-8 text-white shadow-lg mb-8">
                     <div class="flex flex-col md:flex-row items-center justify-between">
                         <div class="md:w-1/2 mb-6 md:mb-0">
                             <h2 class="text-3xl font-bold mb-2">Participe dos nossos Hackathons</h2>
                             <p class="opacity-90 mb-8">Desafie-se, aprenda e construa projetos incríveis com outros alunos.</p>
-                            <!-- Botão com mais destaque -->
                             <a href="/hackathons" class="btn-destaque inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-lg hover:bg-gray-100 transition duration-300 transform hover:scale-105">
                                 Acesse os Hackathons
                                 <i class="fas fa-arrow-right ml-3"></i>
@@ -104,9 +87,7 @@
                     </div>
                 </div>
 
-                <!-- Nova linha de grid para os cards inferiores -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Card de Atividades Recentes (ocupa 2 colunas) -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">Atividades Recentes</h3>
                         <div class="space-y-4">
@@ -129,7 +110,6 @@
                         </div>
                     </div>
 
-                    <!-- Card de Links Rápidos (ocupa 1 coluna) -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">Links Rápidos</h3>
                         <ul class="space-y-3">
