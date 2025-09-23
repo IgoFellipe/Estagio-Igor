@@ -21,6 +21,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Validação inicial para todos os tipos de usuário
         $request->validate([
             'password' => 'required|string',
             'tipo' => 'required|in:aluno,professor,adm',
@@ -43,6 +44,7 @@ class AuthController extends Controller
             ];
         }
 
+        // Validação de matrícula para alunos
         if ($request->tipo === 'aluno') {
             $user = User::where('email', $request->email)
                 ->where('tipo', $request->tipo)
@@ -53,15 +55,18 @@ class AuthController extends Controller
             }
         }
 
+        // Tentativa de login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             $user = Auth::user();
 
-            if ($user->tipo === 'aluno' || $user->tipo === 'professor') {
+            if ($user->tipo === 'aluno') {
                 return redirect()->route('dashboard.aluno')->with('success', 'Login realizado com sucesso.');
             } elseif ($user->tipo === 'adm') {
                 return redirect()->route('users.index')->with('success', 'Login de ADM realizado com sucesso.');
+            } elseif ($user->tipo === 'professor') {
+                return redirect()->route('dashboard.professor')->with('success', 'Login de Professor realizado com sucesso.');
             }
         }
 

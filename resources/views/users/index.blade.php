@@ -241,7 +241,7 @@
             document.getElementById('edit_matricula').value = matricula;
             document.getElementById('edit_tipo').value = tipo;
 
-            // Ativa o evento de change para garantir que a matrícula seja exibida
+
             const event = new Event('change');
             document.getElementById('edit_tipo').dispatchEvent(event);
 

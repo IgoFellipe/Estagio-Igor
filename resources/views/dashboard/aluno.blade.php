@@ -15,7 +15,7 @@
 
         <aside class="bg-sidebar text-white w-64 space-y-2 py-4 absolute inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30">
             <a href="#" class="text-white flex items-center justify-center px-6 py-4">
-                <img src="{{ asset('image/Simplifi(K)athon.png') }}" alt="Logo SimplifiKathon" class="h-12">
+                <img src="{{ asset('image/SimplifiKathon.png') }}" alt="Logo SimplifiKathon" class="h-12">
             </a>
 
             <div class="px-6 py-4 border-t border-b border-gray-700">
