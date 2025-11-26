@@ -1,0 +1,71 @@
+:root {
+    --cor-principal: #f58220;
+    --cor-sidebar: #343a40;
+    --cor-fundo: #f4f6f9;
+    --cor-texto-escuro: #333333;
+    --cor-texto-claro: #666666;
+    --cor-hackathon: #003bff;
+}
+
+.bg-principal {
+    background-color: var(--cor-principal);
+}
+
+.text-principal {
+    color: var(--cor-principal);
+}
+
+.bg-sidebar {
+    background-color: var(--cor-sidebar);
+}
+
+.hover\:bg-principal-dark:hover {
+    background-color: #e07014;
+}
+
+.hackathon-card {
+    background-color: var(--cor-hackathon);
+    transition: all 0.3s ease;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    color: #c2c7d0;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.95rem;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: #494e53;
+    color: #ffffff;
+}
+
+.sidebar-link i {
+    width: 20px;
+    margin-right: 1rem;
+    text-align: center;
+}
+
+@keyframes pulse-animation {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 130, 32, 0.7);
+    }
+
+    70% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 10px rgba(245, 130, 32, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 130, 32, 0);
+    }
+}
+
+.btn-destaque {
+    animation: pulse-animation 3s infinite;
+}
