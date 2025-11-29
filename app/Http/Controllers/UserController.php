@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Hackathon; // Import Hackathon model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,12 @@ class UserController extends Controller
         }
 
         $users = $query->get();
-        return view('users.index', compact('users'));
+        $user = Auth::user(); 
+        
+        // Fix: Pass all hackathons or an empty collection to avoid "Undefined variable" error in the view
+        $hackathons = Hackathon::all(); 
+
+        return view('users.index', compact('users', 'user', 'hackathons'));
     }
 
     public function create()

@@ -14,7 +14,7 @@
                 extend: {
                     colors: {
                         principal: '#f58220',
-                        sidebar: '#343a40', // Cor da sidebar do aluno (Dark)
+                        sidebar: '#343a40', 
                         'sidebar-hover': '#495057',
                     },
                     fontFamily: {
@@ -57,6 +57,7 @@
                 <span>Início</span>
             </a>
             
+            {{-- Link Ativo --}}
             <a href="{{ route('aluno.hackathons.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sidebar-hover text-white border-l-4 border-principal transition-all shadow-sm group">
                 <i class="fas fa-laptop-code w-6 text-center mr-3 text-principal"></i>
                 <span>Hackathons</span>
