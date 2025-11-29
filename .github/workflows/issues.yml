@@ -1,0 +1,15 @@
+
+
+
+name: Issues
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  help-wanted:
+    uses: laravel/.github/.github/workflows/issues.yml@main
