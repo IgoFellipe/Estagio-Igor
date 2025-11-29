@@ -4,250 +4,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Gerenciamento de Usuários (ADM)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" xintegrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-
-<body class="bg-gray-50 font-sans p-8">
-    <div class="max-w-7xl mx-auto">
-        <div class="bg-white rounded-xl shadow-2xl p-8">
-            <!-- Header da Tela Principal -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Gerenciar Usuários</h1>
-                <button id="open-create-modal" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">
-                    <i class="fas fa-plus-circle mr-2"></i>
-                    Cadastrar Novo Usuário
-                </button>
-            </div>
-
-            <!-- Mensagem de Sucesso -->
-            @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md mb-4">
-                <p>{{ session('success') }}</p>
-            </div>
-            @endif
-
-            <!-- Formulário de Filtro -->
-            <form method="GET" action="{{ route('users.index') }}" class="mb-6">
-                <div class="flex items-center space-x-4">
-                    <label for="filtro" class="text-sm font-medium text-gray-700">Filtrar por tipo:</label>
-                    <select name="filtro" onchange="this.form.submit()" class="mt-1 block w-full md:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">Todos</option>
-                        <option value="aluno" {{ request('filtro') == 'aluno' ? 'selected' : '' }}>Alunos</option>
-                        <option value="professor" {{ request('filtro') == 'professor' ? 'selected' : '' }}>Professores</option>
-                        <option value="adm" {{ request('filtro') == 'adm' ? 'selected' : '' }}>Administradores</option>
-                    </select>
-                </div>
-            </form>
-
-            <!-- Tabela de Usuários -->
-            <div class="overflow-x-auto bg-gray-50 rounded-lg shadow-sm">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-200">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                ID
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nome
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Matrícula
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tipo
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($users as $user)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $user->id }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $user->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $user->email }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $user->matricula }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ ucfirst($user->tipo) }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button onclick="openEditModal(`{{ $user->id }}`, `{{ addslashes($user->name) }}`, `{{ addslashes($user->email) }}`, `{{ addslashes($user->matricula) }}`, `{{ $user->tipo }}`)" class="text-indigo-600 hover:text-indigo-900 mr-4">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Cadastro de Usuário -->
-    <div id="create-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 class="text-lg font-bold mb-4">Cadastrar Novo Usuário</h3>
-            <form method="POST" action="{{ route('users.store') }}" class="space-y-4">
-                @csrf
-                <div>
-                    <label for="create_name" class="block text-sm font-medium text-gray-700">Nome:</label>
-                    <input type="text" name="name" id="create_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="create_email" class="block text-sm font-medium text-gray-700">Email:</label>
-                    <input type="email" name="email" id="create_email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="create_tipo" class="block text-sm font-medium text-gray-700">Tipo:</label>
-                    <select name="tipo" id="create_tipo" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                        <option value="aluno">Aluno</option>
-                        <option value="professor">Professor</option>
-                        <option value="adm">Administrador</option>
-                    </select>
-                </div>
-                <div id="create_matricula_container">
-                    <label for="create_matricula" class="block text-sm font-medium text-gray-700">Matrícula:</label>
-                    <input type="text" name="matricula" id="create_matricula" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="create_password" class="block text-sm font-medium text-gray-700">Senha:</label>
-                    <input type="password" name="password" id="create_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="create_password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar Senha:</label>
-                    <input type="password" name="password_confirmation" id="create_password_confirmation" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div class="flex justify-end space-x-4 mt-4">
-                    <button type="button" onclick="closeModal('create-modal')" class="py-2 px-4 bg-gray-500 text-white rounded-md hover:bg-gray-700">Cancelar</button>
-                    <button type="submit" class="py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Cadastrar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de Edição de Usuário -->
-    <div id="edit-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 class="text-lg font-bold mb-4">Editar Usuário</h3>
-            <form id="edit-form" method="POST" class="space-y-4">
-                @csrf
-                @method('PUT')
-                <div>
-                    <label for="edit_name" class="block text-sm font-medium text-gray-700">Nome:</label>
-                    <input type="text" name="name" id="edit_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="edit_email" class="block text-sm font-medium text-gray-700">Email:</label>
-                    <input type="email" name="email" id="edit_email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="edit_tipo" class="block text-sm font-medium text-gray-700">Tipo:</label>
-                    <select name="tipo" id="edit_tipo" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                        <option value="aluno">Aluno</option>
-                        <option value="professor">Professor</option>
-                        <option value="adm">Administrador</option>
-                    </select>
-                </div>
-                <div id="edit_matricula_container" class="hidden">
-                    <label for="edit_matricula" class="block text-sm font-medium text-gray-700">Matrícula:</label>
-                    <input type="text" name="matricula" id="edit_matricula" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="edit_password" class="block text-sm font-medium text-gray-700">Nova Senha (opcional):</label>
-                    <input type="password" name="password" id="edit_password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label for="edit_password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar nova senha:</label>
-                    <input type="password" name="password_confirmation" id="edit_password_confirmation" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div class="flex justify-end space-x-4 mt-4">
-                    <button type="button" onclick="closeModal('edit-modal')" class="py-2 px-4 bg-gray-500 text-white rounded-md hover:bg-gray-700">Cancelar</button>
-                    <button type="submit" class="py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Salvar alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    <title>Gerenciar Hackathons - SimplifiKathon</title>
+    {{-- Configuração do Tailwind (Mesma do dashboard) --}}
     <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        document.getElementById('open-create-modal').addEventListener('click', function() {
-            openModal('create-modal');
-        });
-
-        // Toggle do campo de matrícula para o modal de criação
-        document.getElementById('create_tipo').addEventListener('change', function(e) {
-            const matriculaContainer = document.getElementById('create_matricula_container');
-            const matriculaInput = document.getElementById('create_matricula');
-            if (e.target.value === 'aluno') {
-                matriculaContainer.classList.remove('hidden');
-                matriculaInput.required = true;
-            } else {
-                matriculaContainer.classList.add('hidden');
-                matriculaInput.required = false;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        principal: '#f58220',
+                        sidebar: '#1e293b',
+                        'sidebar-hover': '#334155',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
             }
-        });
-
-        // Toggle do campo de matrícula para o modal de edição
-        document.getElementById('edit_tipo').addEventListener('change', function(e) {
-            const matriculaContainer = document.getElementById('edit_matricula_container');
-            const matriculaInput = document.getElementById('edit_matricula');
-            if (e.target.value === 'aluno') {
-                matriculaContainer.classList.remove('hidden');
-                matriculaInput.required = true;
-            } else {
-                matriculaContainer.classList.add('hidden');
-                matriculaInput.required = false;
-            }
-        });
-
-        function openEditModal(id, name, email, matricula, tipo) {
-            const editModal = document.getElementById('edit-modal');
-            const editForm = document.getElementById('edit-form');
-            editForm.action = `/users/${id}`;
-
-            document.getElementById('edit_name').value = name;
-            document.getElementById('edit_email').value = email;
-            document.getElementById('edit_matricula').value = matricula;
-            document.getElementById('edit_tipo').value = tipo;
-
-            // Ativa o evento de change para garantir que a matrícula seja exibida
-            const event = new Event('change');
-            document.getElementById('edit_tipo').dispatchEvent(event);
-
-            openModal('edit-modal');
         }
     </script>
-</body>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
 
+<body class="bg-gray-50 text-slate-800 font-sans h-screen flex overflow-hidden">
+
+    {{-- Barra Lateral (Idêntica ao Dashboard) --}}
+    <aside class="w-72 bg-sidebar text-slate-200 flex flex-col shadow-lg flex-shrink-0 transition-all duration-300">
+        <div class="flex items-center justify-center p-6 border-b border-slate-700">
+            <img src="{{ asset('image/Simplifi(K)athon.png') }}" alt="SimplifiKathon" class="h-12 w-auto">
+        </div>
+
+        <div class="px-6 py-6 border-b border-slate-700">
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 rounded-full bg-principal flex items-center justify-center text-white font-bold text-xl ring-2 ring-offset-2 ring-offset-sidebar ring-principal shadow-md">
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                </div>
+                <div>
+                    <p class="font-semibold text-white truncate max-w-[140px]" title="{{ $user->name }}">
+                        {{ explode(' ', $user->name)[0] }}
+                    </p>
+                    <p class="text-xs text-slate-400 font-medium tracking-wide">PROFESSOR</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="{{ route('dashboard.professor') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-300 hover:bg-sidebar-hover hover:text-white border-l-4 border-transparent hover:border-principal transition-all group">
+                <i class="fas fa-home w-6 text-center group-hover:text-principal transition-colors"></i>
+                <span class="ml-3">Início</span>
+            </a>
+            
+            {{-- Botão Criar (pode abrir modal ou levar de volta ao dashboard se o modal estiver lá) --}}
+            <a href="{{ route('dashboard.professor') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-300 hover:bg-sidebar-hover hover:text-white border-l-4 border-transparent hover:border-principal transition-all group">
+                <i class="fas fa-plus-circle w-6 text-center group-hover:text-principal transition-colors"></i>
+                <span class="ml-3">Criar Hackathon</span>
+            </a>
+
+            <a href="{{ route('hackathons.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sidebar-hover text-white border-l-4 border-principal transition-all shadow-sm group">
+                <i class="fas fa-laptop-code w-6 text-center text-principal group-hover:scale-110 transition-transform"></i>
+                <span class="ml-3">Ver Hackathons</span>
+            </a>
+
+            <div class="pt-4 mt-4 border-t border-slate-700">
+                <p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Gestão</p>
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-500 hover:bg-sidebar-hover hover:text-slate-300 cursor-not-allowed border-l-4 border-transparent transition-all group">
+                    <i class="fas fa-user-check w-6 text-center"></i>
+                    <span class="ml-3">Aprovar Alunos <span class="ml-2 text-[10px] bg-slate-700 px-1.5 py-0.5 rounded text-slate-400">Em breve</span></span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700 bg-slate-900/30">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-500 hover:text-white rounded-lg transition-all duration-200">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Sair
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    {{-- Conteúdo Principal --}}
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+        <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20 px-6 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Seus Hackathons</h1>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('dashboard.professor') }}" class="text-sm text-principal hover:text-orange-600 font-medium flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+            <div class="max-w-7xl mx-auto">
+                
+                @if($hackathons->isEmpty())
+                    <div class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100 text-center">
+                        <div class="bg-orange-50 p-4 rounded-full mb-4">
+                            <i class="fas fa-box-open text-4xl text-principal"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Nenhum hackathon encontrado</h3>
+                        <p class="text-slate-500 mb-6 max-w-md mx-auto">Você ainda não criou nenhum evento. Volte ao início para criar o seu primeiro Hackathon.</p>
+                        <a href="{{ route('dashboard.professor') }}" class="px-6 py-2.5 bg-principal hover:bg-orange-600 text-white font-semibold rounded-lg shadow-md transition-all">
+                            Criar Agora
+                        </a>
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($hackathons as $hackathon)
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full">
+                            {{-- Placeholder de Imagem (pode ser substituído pela imagem real se houver) --}}
+                            <div class="h-32 bg-slate-100 flex items-center justify-center text-slate-300 relative overflow-hidden">
+                                <i class="fas fa-code text-4xl"></i>
+                                <div class="absolute top-3 right-3">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ now() > $hackathon->data_fim ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                        {{ now() > $hackathon->data_fim ? 'Encerrado' : 'Ativo' }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 flex-1 flex flex-col">
+                                <h4 class="font-bold text-lg text-slate-800 mb-2 line-clamp-1" title="{{ $hackathon->nome }}">{{ $hackathon->nome }}</h4>
+                                <p class="text-slate-500 text-sm mb-4 line-clamp-2 flex-1">{{ $hackathon->descricao }}</p>
+                                
+                                <div class="space-y-2 mb-6 border-t border-gray-100 pt-4">
+                                    <div class="flex items-center text-xs text-slate-500">
+                                        <i class="fas fa-calendar-alt w-5 text-center mr-2 text-principal"></i>
+                                        <span>Início: <span class="font-medium text-slate-700">{{ \Carbon\Carbon::parse($hackathon->data_inicio)->format('d/m/Y H:i') }}</span></span>
+                                    </div>
+                                    <div class="flex items-center text-xs text-slate-500">
+                                        <i class="fas fa-calendar-check w-5 text-center mr-2 text-principal"></i>
+                                        <span>Fim: <span class="font-medium text-slate-700">{{ \Carbon\Carbon::parse($hackathon->data_fim)->format('d/m/Y H:i') }}</span></span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 pt-2">
+                                    <a href="#" class="flex-1 text-center px-4 py-2 bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 hover:text-principal transition-colors">
+                                        Detalhes
+                                    </a>
+                                    <button class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+    </main>
+</body>
 </html>

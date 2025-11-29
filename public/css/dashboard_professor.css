@@ -1,0 +1,73 @@
+/* ==============================================
+    Estilos Aprimorados para o Dashboard do Professor
+    ==============================================
+*/
+
+:root {
+    --fundo: #f8f9fa;
+    --sidebar-bg: #1e293b;
+    /* Azul escuro/ardósia */
+    --sidebar-texto: #e2e8f0;
+    /* Cinza claro */
+    --sidebar-hover-bg: #334155;
+    --principal: #f58220;
+    /* Laranja da identidade visual */
+    --texto-escuro: #0f172a;
+    --borda: #e2e8f0;
+    --sombra: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body {
+    background-color: var(--fundo);
+    color: var(--texto-escuro);
+    font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-texto);
+    box-shadow: var(--sombra);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.875rem 1.5rem;
+    /* 14px 24px */
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar-link:hover {
+    background-color: var(--sidebar-hover-bg);
+    color: #ffffff;
+    border-left-color: var(--principal);
+}
+
+.sidebar-link.active {
+    background-color: var(--sidebar-hover-bg);
+    color: #ffffff;
+    font-weight: 600;
+    border-left-color: var(--principal);
+}
+
+.sidebar-link i {
+    width: 20px;
+    margin-right: 0.75rem;
+    /* 12px */
+    text-align: center;
+    font-size: 1rem;
+}
+
+.header-main {
+    border-bottom: 1px solid var(--borda);
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    /* 12px */
+    box-shadow: var(--sombra);
+}

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard_aluno.css') }}">
 </head>
 
-<body class="font-sans" style="background-color: var(--cor-fundo);">
+<body class="font-sans bg-fundo">
     <div class="flex h-screen bg-gray-100">
 
         <aside class="bg-sidebar text-white w-64 space-y-2 py-4 absolute inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30">

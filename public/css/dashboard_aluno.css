@@ -69,3 +69,7 @@
 .btn-destaque {
     animation: pulse-animation 3s infinite;
 }
+
+.bg-fundo {
+    background-color: var(--cor-fundo);
+}
