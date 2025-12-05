@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Grupo extends Model
 {
-    protected $fillable = ['nome', 'hackathon_id', 'lider_id'];
+    protected $fillable = ['nome', 'hackathon_id', 'lider_id', 'codigo'];
 
     public function hackathon()
     {

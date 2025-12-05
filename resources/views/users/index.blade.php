@@ -128,8 +128,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
-                                                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold">
-                                                    {{ strtoupper(substr($u->name, 0, 1)) }}
+                                                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold overflow-hidden">
+                                                    @if($u->avatar)
+                                                        <img src="{{ asset('storage/' . $u->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                                                    @else
+                                                        {{ strtoupper(substr($u->name, 0, 1)) }}
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="ml-4">
@@ -216,7 +220,7 @@
     <div id="edit-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Editar Usuário</h3>
-            <form id="edit-form" method="POST" class="space-y-4">
+            <form id="edit-form" method="POST" class="space-y-4" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 {{-- Campos idênticos ao create, mas com IDs diferentes para manipulação via JS --}}
@@ -227,6 +231,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
                     <input type="email" name="email" id="edit_email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="edit_avatar" class="block text-sm font-medium text-gray-700">Foto de Perfil</label>
+                    <input type="file" name="avatar" id="edit_avatar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tipo</label>
