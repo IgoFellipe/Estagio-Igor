@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hackathon extends Model
 {
-    protected $fillable = ['nome', 'descricao', 'data_inicio', 'data_fim'];
+    protected $fillable = [
+    'nome',
+    'descricao',
+    'data_inicio',
+    'data_fim',
+    'banner'
+];
 
     public function grupos()
     {

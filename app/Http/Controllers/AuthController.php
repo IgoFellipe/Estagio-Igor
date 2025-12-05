@@ -58,12 +58,14 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            if ($user->tipo === 'aluno' || $user->tipo === 'professor') {
-                return redirect()->route('dashboard.aluno')->with('success', 'Login realizado com sucesso.');
-            } elseif ($user->tipo === 'adm') {
-                return redirect()->route('users.index')->with('success', 'Login de ADM realizado com sucesso.');
-            }
-        }
+    if ($user->tipo === 'aluno') {
+        return redirect()->route('dashboard.aluno')->with('success', 'Login realizado com sucesso.');
+    } elseif ($user->tipo === 'professor') {
+        return redirect()->route('dashboard.professor')->with('success', 'Bem-vindo, Professor!');
+    } elseif ($user->tipo === 'adm') {
+        return redirect()->route('users.index')->with('success', 'Login de ADM realizado com sucesso.');
+    }
+}
 
         return back()->withErrors(['geral' => 'Credenciais inválidas.']);
     }
