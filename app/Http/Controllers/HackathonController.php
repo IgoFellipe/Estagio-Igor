@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\Hackathon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class HackathonController extends Controller
 {
     /**
-     * Exibe a lista de hackathons para o PROFESSOR (com opções de editar/excluir).
+     * Lista hackathons para o professor.
      */
     public function index(): View
     {
@@ -25,16 +26,16 @@ class HackathonController extends Controller
     }
 
     /**
-     * Exibe a lista de hackathons para o ALUNO (apenas visualização/inscrição).
+     * Lista hackathons para o aluno.
      */
     public function alunoIndex(): View
     {
-        // Busca hackathons que ainda não terminaram
+        // Hackathons ativos
         $hackathons = Hackathon::where('data_fim', '>=', now())
                                 ->orderBy('data_inicio', 'asc')
                                 ->get();
 
-        // CORREÇÃO AQUI: Aponta para a pasta hackathons/aluno/index.blade.php
+
         return view('hackathons.aluno.index', [
             'hackathons' => $hackathons,
             'user' => Auth::user()->load('grupos')
@@ -55,7 +56,18 @@ class HackathonController extends Controller
             $validatedData['banner'] = $request->banner->store('hackathons', 'public');
         }
 
-        Hackathon::create($validatedData);
+        $hackathon = Hackathon::create($validatedData);
+
+        // Criar anúncio global para todos os alunos
+        Announcement::create([
+            'title' => '🚀 Novo Hackathon: ' . $hackathon->nome,
+            'body' => 'O hackathon "' . $hackathon->nome . '" foi criado! Inscreva-se e forme seu grupo para participar.',
+            'icon' => 'megaphone',
+            'type' => 'info',
+            'category' => 'general',
+            'action_url' => route('aluno.hackathons.index'),
+            'expires_at' => $hackathon->data_fim,
+        ]);
 
         return redirect()->route('dashboard.professor')->with('success', 'Hackathon criado com sucesso!');
     }
@@ -75,7 +87,7 @@ class HackathonController extends Controller
         ]);
 
         if ($request->hasFile('banner') && $request->file('banner')->isValid()) {
-            // Delete old banner if exists
+            // Remove banner antigo
             if ($hackathon->banner && Storage::disk('public')->exists($hackathon->banner)) {
                 Storage::disk('public')->delete($hackathon->banner);
             }
