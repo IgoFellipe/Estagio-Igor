@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Hackathon; // Importe o modelo Hackathon
+use App\Models\Hackathon;
 
 class DashboardController extends Controller
 {
@@ -12,8 +12,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Busca hackathons ativos (data de fim futura) e ordena pelos mais próximos de acabar
-        // Você pode ajustar a lógica conforme sua regra de negócio (ex: só os abertos para inscrição)
+        // Hackathons ativos
         $hackathons = Hackathon::where('data_fim', '>=', now())
                                 ->orderBy('data_inicio', 'asc')
                                 ->get();

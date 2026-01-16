@@ -18,4 +18,12 @@ class Hackathon extends Model
     {
         return $this->hasMany(Grupo::class);
     }
+
+    /**
+     * Registros de presença do hackathon
+     */
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class);
+    }
 }

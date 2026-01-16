@@ -18,6 +18,8 @@ class User extends Authenticatable
         'matricula',
         'tipo',
         'avatar',
+        'current_xp',
+        'current_level',
     ];
 
     protected $hidden = [
@@ -31,7 +33,7 @@ class User extends Authenticatable
         'tipo' => 'string',
     ];
 
-    // Adicione a nova enumeração para o tipo
+    // Tipos de usuário permitidos
     protected $enums = [
         'tipo' => ['aluno', 'professor', 'adm'],
     ];
@@ -46,5 +48,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Grupo::class, 'lider_id')
             ->with('membros', 'hackathon');
+    }
+
+    /**
+     * Registros de presença do usuário
+     */
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class);
     }
 }

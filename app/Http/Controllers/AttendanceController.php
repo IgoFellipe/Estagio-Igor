@@ -1,0 +1,182 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\AttendanceStatus;
+use App\Models\AttendanceRecord;
+use App\Models\Hackathon;
+use App\Notifications\PresenceValidatedNotification;
+use App\Services\GamificationService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+
+class AttendanceController extends Controller
+{
+    /**
+     * Exibe o formulário de upload de foto para o aluno
+     */
+    public function create(): View
+    {
+        $user = Auth::user();
+        
+        // Hackathons disponíveis (ativos)
+        $hackathons = Hackathon::where('data_fim', '>=', now())
+            ->orderBy('data_inicio', 'asc')
+            ->get();
+
+        // Presenças já enviadas pelo aluno
+        $presencasEnviadas = AttendanceRecord::where('user_id', $user->id)
+            ->pluck('hackathon_id')
+            ->toArray();
+
+        return view('attendance.aluno.create', [
+            'hackathons' => $hackathons,
+            'presencasEnviadas' => $presencasEnviadas,
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Processa o upload da foto de presença
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'hackathon_id' => [
+                'required',
+                'exists:hackathons,id',
+                Rule::unique('attendance_records')->where(function ($query) use ($user) {
+                    return $query->where('user_id', $user->id);
+                }),
+            ],
+            'photo' => [
+                'required',
+                Rule::file()->image()->max(5120), // Max 5MB
+            ],
+        ], [
+            'hackathon_id.required' => 'Selecione um hackathon.',
+            'hackathon_id.exists' => 'Hackathon inválido.',
+            'hackathon_id.unique' => 'Você já enviou uma foto de presença para este hackathon.',
+            'photo.required' => 'Selecione uma foto.',
+            'photo.image' => 'O arquivo deve ser uma imagem.',
+            'photo.max' => 'A imagem não pode ter mais de 5MB.',
+        ]);
+
+        // Salva a foto em storage privado com nome hash
+        $path = $request->file('photo')->store('attendance', 'local');
+
+        AttendanceRecord::create([
+            'user_id' => $user->id,
+            'hackathon_id' => $validated['hackathon_id'],
+            'photo_path' => $path,
+            'status' => AttendanceStatus::PENDING,
+        ]);
+
+        return redirect()
+            ->route('aluno.presenca.create')
+            ->with('success', 'Foto de presença enviada com sucesso! Aguarde a validação do professor.');
+    }
+
+    /**
+     * Lista as presenças pendentes de um hackathon (Professor)
+     */
+    public function index(Hackathon $hackathon): View
+    {
+        $presencas = AttendanceRecord::where('hackathon_id', $hackathon->id)
+            ->with('user')
+            ->latest()
+            ->get();
+
+        return view('attendance.professor.index', [
+            'hackathon' => $hackathon,
+            'presencas' => $presencas,
+        ]);
+    }
+
+    /**
+     * Lista todos os hackathons para o professor selecionar
+     */
+    public function hackathonList(): View
+    {
+        $hackathons = Hackathon::withCount([
+            'attendanceRecords as pendentes_count' => function ($query) {
+                $query->where('status', AttendanceStatus::PENDING->value);
+            }
+        ])->latest()->get();
+
+        return view('attendance.professor.hackathons', [
+            'hackathons' => $hackathons,
+        ]);
+    }
+
+    /**
+     * Atualiza o status de uma presença (Aprovar/Rejeitar)
+     */
+    public function update(Request $request, AttendanceRecord $attendance): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::enum(AttendanceStatus::class)],
+            'admin_note' => ['nullable', 'string', 'max:500'],
+        ], [
+            'status.required' => 'Selecione uma ação.',
+            'admin_note.max' => 'A observação não pode ter mais de 500 caracteres.',
+        ]);
+
+        $oldStatus = $attendance->status;
+
+        $attendance->update([
+            'status' => $validated['status'],
+            'admin_note' => $validated['admin_note'] ?? null,
+        ]);
+
+        $newStatus = AttendanceStatus::from($validated['status']);
+
+        // Enviar notificação ao aluno
+        $attendance->user->notify(new PresenceValidatedNotification(
+            $attendance,
+            $newStatus,
+            $validated['admin_note'] ?? null
+        ));
+
+        // Conceder pontos de gamificação se aprovado
+        if ($newStatus === AttendanceStatus::APPROVED) {
+            $gamificationService = app(GamificationService::class);
+            $gamificationService->awardPoints(
+                $attendance->user,
+                'presence_confirmed',
+                $attendance,
+                "Presença validada no hackathon: {$attendance->hackathon->nome}"
+            );
+        }
+
+        $statusLabel = $newStatus->label();
+        
+        return redirect()
+            ->route('professor.presenca.index', $attendance->hackathon_id)
+            ->with('success', "Presença de {$attendance->user->name} marcada como: {$statusLabel}");
+    }
+
+    /**
+     * Gera URL temporária assinada para visualização segura da foto
+     */
+    public function showPhoto(AttendanceRecord $attendance): Response
+    {
+        // Verifica se o arquivo existe
+        if (!Storage::disk('local')->exists($attendance->photo_path)) {
+            abort(404, 'Foto não encontrada.');
+        }
+
+        // Retorna a imagem diretamente
+        $file = Storage::disk('local')->get($attendance->photo_path);
+        $mimeType = Storage::disk('local')->mimeType($attendance->photo_path);
+
+        return response($file, 200)->header('Content-Type', $mimeType);
+    }
+}

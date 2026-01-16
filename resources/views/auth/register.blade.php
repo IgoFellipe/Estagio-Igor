@@ -37,6 +37,7 @@
                 <input type="text" name="name" id="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
+            
             <div>
                 <label for="matricula" class="block text-sm font-medium text-gray-700">Matrícula:</label>
                 <input type="text" name="matricula" id="matricula" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
